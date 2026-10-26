@@ -1,0 +1,130 @@
+[
+  {
+    "id": "normal",
+    "description": "Normal sinus rhythm",
+    "file": "normal.csv",
+    "source": "PTB-XL ecg_id 9",
+    "ptbxl_codes": [
+      "NORM",
+      "SR"
+    ],
+    "fs": 100,
+    "age": 55,
+    "sex": "male"
+  },
+  {
+    "id": "sinus_brady",
+    "description": "Sinus bradycardia",
+    "file": "sinus_brady.csv",
+    "source": "PTB-XL ecg_id 611",
+    "ptbxl_codes": [
+      "NORM",
+      "SBRAD"
+    ],
+    "fs": 100,
+    "age": 63,
+    "sex": "male"
+  },
+  {
+    "id": "sinus_tachy",
+    "description": "Sinus tachycardia",
+    "file": "sinus_tachy.csv",
+    "source": "PTB-XL ecg_id 2277",
+    "ptbxl_codes": [
+      "NORM",
+      "STACH"
+    ],
+    "fs": 100,
+    "age": 59,
+    "sex": "male"
+  },
+  {
+    "id": "afib",
+    "description": "Atrial fibrillation",
+    "file": "afib.csv",
+    "source": "PTB-XL ecg_id 7221",
+    "ptbxl_codes": [
+      "AFIB"
+    ],
+    "fs": 100,
+    "age": "90+",
+    "sex": "male"
+  },
+  {
+    "id": "aflutter",
+    "description": "Atrial flutter",
+    "file": "aflutter.csv",
+    "source": "PTB-XL ecg_id 449",
+    "ptbxl_codes": [
+      "AFLT"
+    ],
+    "fs": 100,
+    "age": 63,
+    "sex": "female"
+  },
+  {
+    "id": "avb1",
+    "description": "First-degree AV block",
+    "file": "avb1.csv",
+    "source": "PTB-XL ecg_id 2146",
+    "ptbxl_codes": [
+      "1AVB",
+      "SR"
+    ],
+    "fs": 100,
+    "age": 68,
+    "sex": "male"
+  },
+  {
+    "id": "avb3",
+    "description": "Third-degree (complete) AV block",
+    "file": "avb3.csv",
+    "source": "PTB-XL ecg_id 959",
+    "ptbxl_codes": [
+      "3AVB",
+      "ASMI",
+      "IRBBB",
+      "SR"
+    ],
+    "fs": 100,
+    "age": 88,
+    "sex": "female"
+  },
+  {
+    "id": "lbbb",
+    "description": "Left bundle branch block",
+    "file": "lbbb.csv",
+    "source": "PTB-XL ecg_id 1564",
+    "ptbxl_codes": [
+      "CLBBB"
+    ],
+    "fs": 100,
+    "age": 76,
+    "sex": "male"
+  },
+  {
+    "id": "rbbb",
+    "description": "Right bundle branch block",
+    "file": "rbbb.csv",
+    "source": "PTB-XL ecg_id 5212",
+    "ptbxl_codes": [
+      "CRBBB"
+    ],
+    "fs": 100,
+    "age": 56,
+    "sex": "male"
+  },
+  {
+    "id": "pvc",
+    "description": "Premature ventricular complexes",
+    "file": "pvc.csv",
+    "source": "PTB-XL ecg_id 6224",
+    "ptbxl_codes": [
+      "ASMI",
+      "PVC"
+    ],
+    "fs": 100,
+    "age": "90+",
+    "sex": "female"
+  }
+]

@@ -1,0 +1,219 @@
+# Triage and next-step rules for each rhythm.
+#
+# STATUS: DRAFT - pending clinical review by Dow University Hospital. NOT for clinical use.
+# Based on: AHA 2020 ACLS adult bradycardia and tachycardia-with-pulse algorithms;
+#           2023 ACC/AHA/ACCP/HRS atrial fibrillation guideline.
+#
+# How it works:
+#   - Each rhythm has a "stable" and an "unstable" entry: triage colour + next steps.
+#   - "modifiers" raise the triage and add steps when a symptom or heart rate condition is present.
+#   - The patient is UNSTABLE if the clinician marks them unstable, systolic BP < 90,
+#     or symptoms include altered mental status, shock or acute heart failure.
+#   - Overall triage = the most urgent colour across all findings and warnings.
+
+version: draft-0.1
+disclaimer: "Decision support only. Draft recommendations pending clinical review. The treating physician is responsible for all decisions."
+
+detection_threshold: 0.5        # a rhythm is reported if its probability is at least this
+unstable_symptoms: [altered_mental_status, shock, heart_failure]
+unstable_sbp_below: 90
+
+rhythms:
+
+  NSR:
+    stable:
+      triage: green
+      next_steps:
+        - "No arrhythmia detected."
+        - "A normal rhythm does not rule out other cardiac problems; interpret in clinical context."
+    unstable:
+      triage: amber
+      next_steps:
+        - "The rhythm is sinus, so the instability is unlikely to be caused by an arrhythmia."
+        - "Look for other causes, e.g. bleeding/hypovolaemia, sepsis, pulmonary embolism, myocardial infarction."
+
+  SBRAD:
+    stable:
+      triage: green
+      next_steps:
+        - "Usually benign when asymptomatic (e.g. athletes, during sleep)."
+        - "Review rate-slowing drugs: beta-blockers, calcium-channel blockers, digoxin."
+        - "If unexplained, check electrolytes and thyroid function; consider hypothermia."
+    unstable:
+      triage: red
+      next_steps:
+        - "Follow the ACLS bradycardia algorithm: atropine 1 mg IV, repeat every 3-5 min, maximum 3 mg."
+        - "If atropine is ineffective: transcutaneous pacing, or dopamine 5-20 mcg/kg/min or epinephrine 2-10 mcg/min infusion."
+        - "Seek expert consultation; consider transvenous pacing."
+    modifiers:
+      - if_hr_below: 40
+        triage: amber
+        add_steps:
+          - "Heart rate below 40: continuous monitoring; have atropine and pacing available."
+
+  STACH:
+    stable:
+      triage: green
+      next_steps:
+        - "Sinus tachycardia is usually a response to another problem, not a primary arrhythmia."
+        - "Find and treat the cause: pain, fever, dehydration, anaemia, hypoxia, anxiety, pulmonary embolism, thyrotoxicosis."
+    unstable:
+      triage: red
+      next_steps:
+        - "Cardioversion is NOT indicated for sinus tachycardia."
+        - "Treat the underlying cause urgently, e.g. haemorrhage/hypovolaemia, sepsis, hypoxia, pulmonary embolism."
+
+  AFIB:
+    stable:
+      triage: amber
+      next_steps:
+        - "If the ventricular rate is fast: rate control with a beta-blocker or diltiazem/verapamil (avoid diltiazem/verapamil in heart failure with reduced ejection fraction or hypotension)."
+        - "Avoid AV-nodal blocking drugs if pre-excitation (WPW) is suspected."
+        - "Assess stroke risk (CHA2DS2-VASc) and anticoagulation. If onset is over 48 hours or unknown, do not cardiovert without anticoagulation or TEE."
+        - "Look for triggers: infection, thyroid disease, electrolyte disturbance, alcohol, ischaemia."
+    unstable:
+      triage: red
+      next_steps:
+        - "Synchronized cardioversion (ACLS: 120-200 J biphasic for atrial fibrillation)."
+        - "Sedate before cardioversion if the patient is conscious and time allows."
+        - "Start or plan anticoagulation around cardioversion."
+    modifiers:
+      - if_hr_above: 150
+        triage: red
+        add_steps:
+          - "Ventricular rate above 150: urgent rate control and close monitoring; reassess stability frequently."
+
+  AFLT:
+    stable:
+      triage: amber
+      next_steps:
+        - "Rate control with a beta-blocker or diltiazem/verapamil (same cautions as atrial fibrillation)."
+        - "Assess stroke risk (CHA2DS2-VASc) and anticoagulation as for atrial fibrillation."
+        - "Cardiology referral: flutter often needs cardioversion or ablation for rhythm control."
+    unstable:
+      triage: red
+      next_steps:
+        - "Synchronized cardioversion (ACLS: 50-100 J; flutter usually responds to lower energy)."
+        - "Sedate before cardioversion if the patient is conscious and time allows."
+
+  SVT:
+    stable:
+      triage: amber
+      next_steps:
+        - "Vagal manoeuvres (e.g. modified Valsalva)."
+        - "If unsuccessful: adenosine 6 mg rapid IV push with saline flush; if no conversion, 12 mg."
+        - "Record a rhythm strip during adenosine."
+        - "If adenosine fails or is contraindicated: beta-blocker or diltiazem/verapamil; seek expert advice."
+    unstable:
+      triage: red
+      next_steps:
+        - "Synchronized cardioversion (ACLS: 50-100 J for narrow regular tachycardia)."
+        - "Adenosine may be tried while preparing for cardioversion if the QRS is narrow and regular."
+
+  AVB1:
+    stable:
+      triage: green
+      next_steps:
+        - "Usually benign; no acute treatment needed."
+        - "Review AV-nodal blocking drugs (beta-blockers, calcium-channel blockers, digoxin)."
+        - "Compare with a previous ECG if available."
+    unstable:
+      triage: amber
+      next_steps:
+        - "First-degree AV block does not usually cause instability."
+        - "Look for other causes, and check a longer rhythm strip for a higher-grade block."
+
+  AVB_HIGH:
+    stable:
+      triage: red
+      next_steps:
+        - "Second/third-degree AV block can progress to asystole: continuous monitoring and transcutaneous pacing pads applied."
+        - "Urgent cardiology referral for pacing evaluation."
+        - "Stop AV-nodal blocking drugs; check potassium; consider ischaemia (especially inferior MI) and drug toxicity (e.g. digoxin)."
+    unstable:
+      triage: red
+      next_steps:
+        - "ACLS bradycardia algorithm: atropine 1 mg IV (repeat every 3-5 min, max 3 mg). Atropine is often ineffective in Mobitz II and complete heart block."
+        - "Transcutaneous pacing without delay if atropine fails, or dopamine/epinephrine infusion."
+        - "Urgent expert consultation for transvenous pacing."
+
+  LBBB:
+    stable:
+      triage: green
+      next_steps:
+        - "If known from a previous ECG and the patient is asymptomatic: no acute action."
+        - "If new or of unknown age: arrange further cardiac evaluation."
+    unstable:
+      triage: red
+      next_steps:
+        - "Instability with LBBB: consider acute myocardial infarction; urgent cardiology consultation."
+    modifiers:
+      - if_symptom_any: [chest_pain]
+        triage: amber
+        add_steps:
+          - "With chest pain, a new or presumed-new LBBB can hide a myocardial infarction: compare with a previous ECG and consult cardiology urgently (Sgarbossa criteria)."
+
+  RBBB:
+    stable:
+      triage: green
+      next_steps:
+        - "Often benign if isolated and asymptomatic."
+        - "Compare with a previous ECG if available."
+    unstable:
+      triage: red
+      next_steps:
+        - "Instability with RBBB: consider pulmonary embolism and myocardial infarction; urgent senior review."
+    modifiers:
+      - if_symptom_any: [chest_pain, dyspnea]
+        triage: amber
+        add_steps:
+          - "With chest pain or breathlessness, a new RBBB can be a sign of pulmonary embolism or myocardial infarction: evaluate accordingly."
+
+  PVC:
+    stable:
+      triage: green
+      next_steps:
+        - "Usually benign if occasional."
+        - "Check potassium and magnesium; review caffeine, stimulants and drugs."
+        - "If frequent, in runs, or with known heart disease: cardiology referral."
+    unstable:
+      triage: amber
+      next_steps:
+        - "PVCs alone rarely cause instability: watch the monitor for runs of ventricular tachycardia and look for other causes."
+    modifiers:
+      - if_symptom_any: [syncope]
+        triage: amber
+        add_steps:
+          - "PVCs with syncope: continuous monitoring and cardiology review to exclude ventricular arrhythmia."
+
+  PAC:
+    stable:
+      triage: green
+      next_steps:
+        - "Usually benign; no treatment needed."
+        - "If symptomatic, reduce triggers such as caffeine, alcohol and stimulants."
+    unstable:
+      triage: amber
+      next_steps:
+        - "PACs do not usually cause instability; look for other causes."
+
+  UNCERTAIN:
+    stable:
+      triage: amber
+      next_steps:
+        - "The model is not confident about this ECG."
+        - "Have the ECG reviewed by a cardiologist or senior physician."
+        - "Check signal quality and lead placement; repeat the ECG if it is noisy."
+    unstable:
+      triage: red
+      next_steps:
+        - "The model is not confident about this ECG and the patient is unstable: urgent senior or cardiology review."
+        - "Manage according to ACLS while awaiting review."
+
+# Checks on the measurements, applied to every ECG
+warnings:
+  qtc_high_ms: 500        # amber: high torsades risk
+  qtc_borderline_ms: 470  # note only
+  hr_low_bpm: 40          # amber
+  hr_high_bpm: 150        # amber
+  qrs_wide_ms: 120        # note
