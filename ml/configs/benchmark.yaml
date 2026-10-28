@@ -20,6 +20,7 @@ dev_subset:
   enabled: false
   fraction: 0.1               # stratification not applied; random sample of records per split
   seed: 0
+  apply_to: [train]           # evaluate on the full validation fold even in dev runs
 
 preprocessing:
   window_s: 2.5
@@ -37,7 +38,25 @@ features:
   n_jobs: -1
 
 models:
-  # Placeholders; filled in during the modelling phase.
+  # Classical model hyperparameters live in src/models/classical.py (recorded in config_hash).
   logistic_regression: {}
   lightgbm: {}
-  cnn_1d: {}
+
+deep_models:
+  # Trained on the 100 Hz cache: random window_s crops for training; fold-9 evaluation on sliding
+  # windows (inference_overlap) with per-label max over windows (Strodthoff et al. 2021).
+  epochs: 50
+  batch_size: 128
+  eval_batch_size: 512
+  lr: 1.0e-2                  # OneCycleLR max_lr (untuned default, as in Strodthoff et al. 2021)
+  weight_decay: 1.0e-2        # AdamW
+  patience: 8                 # early stopping on fold-9 macro-AUROC (primary labels)
+  pos_weight: false           # per-label pos_weight = n_neg / n_pos in BCEWithLogitsLoss
+  num_threads: 8              # torch.set_num_threads; physical cores of a Ryzen 7 5700X
+  simple_cnn:
+    concat_pool: false
+  resnet1d:
+    widths: [64, 128, 128, 256]
+    blocks: [2, 2, 2, 2]
+    kernel: 5
+    concat_pool: true

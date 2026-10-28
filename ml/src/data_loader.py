@@ -176,7 +176,7 @@ class PTBXL:
             mask &= self.validation_report().loc[self.db.index, "valid"].values.astype(bool)
 
         dev = self.config.get("dev_subset", {})
-        if dev.get("enabled", False):
+        if dev.get("enabled", False) and name in dev.get("apply_to", ["train", "val", "test"]):
             rng = np.random.default_rng(dev.get("seed", 0))
             idx = np.flatnonzero(mask)
             keep = rng.choice(idx, size=max(1, int(round(len(idx) * dev["fraction"]))), replace=False)

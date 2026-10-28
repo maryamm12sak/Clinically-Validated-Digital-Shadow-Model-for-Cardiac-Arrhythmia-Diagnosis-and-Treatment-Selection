@@ -16,6 +16,8 @@ ml/
     feature_extraction.py  hand-crafted features for the classical baselines
     evaluate.py        AUROC/AUPRC, macro over primary labels, patient-level bootstrap CI
     models/classical.py    per-label logistic regression, random forest, extra trees, LightGBM
+    models/deep.py     SimpleCNN (FCN-style) and ResNet1d (xresnet1d-style) on raw 100 Hz signals
+    train.py           deep training loop: crops, AdamW + OneCycle, sliding-window max eval, early stopping
   benchmark.py         trains on folds 1-8, evaluates on fold 9, writes ml/results/
   tests/               pytest suite
   requirements-ml.txt
@@ -28,7 +30,11 @@ cd ml
 python benchmark.py                                   # all runs
 python benchmark.py --models logreg,lightgbm --dev-subset
 python benchmark.py --force                           # rebuild features, redo finished runs
+python benchmark.py --models simple_cnn,resnet1d      # deep models (settings: deep_models)
+python benchmark.py --models resnet1d --dev-subset --epochs 2 --smoke   # timing smoke test
 ```
+
+Rows written with `--smoke` have `smoke=True` in `benchmark_results.csv` and are not benchmark results.
 
 Features are extracted once at 500 Hz to `data.features_path` and reused. Results are appended to
 `ml/results/benchmark_results.csv` and `ml/results/per_class_metrics.csv`; fold-9 predictions and

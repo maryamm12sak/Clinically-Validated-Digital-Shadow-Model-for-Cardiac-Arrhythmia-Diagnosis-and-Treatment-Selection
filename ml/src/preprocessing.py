@@ -74,11 +74,20 @@ class PerLeadNormalizer:
         self.std = None if std is None else np.asarray(std, dtype=np.float32)
         self.eps = eps
 
-    def fit(self, X):
-        """X: (N, T, 12) or (T, 12)."""
-        flat = np.asarray(X, dtype=np.float64).reshape(-1, np.shape(X)[-1])
-        self.mean = flat.mean(axis=0).astype(np.float32)
-        self.std = np.maximum(flat.std(axis=0), self.eps).astype(np.float32)
+    def fit(self, X, chunk=1024):
+        """X: (N, T, 12) or (T, 12). Accumulates in float64 chunks so large arrays fit in memory."""
+        X = X[None] if np.ndim(X) == 2 else X
+        n_leads = np.shape(X)[-1]
+        count, s, sq = 0, np.zeros(n_leads), np.zeros(n_leads)
+        for i in range(0, len(X), chunk):
+            block = np.asarray(X[i:i + chunk], dtype=np.float64).reshape(-1, n_leads)
+            count += len(block)
+            s += block.sum(axis=0)
+            sq += (block ** 2).sum(axis=0)
+        mean = s / count
+        var = np.maximum(sq / count - mean ** 2, 0.0)
+        self.mean = mean.astype(np.float32)
+        self.std = np.maximum(np.sqrt(var), self.eps).astype(np.float32)
         return self
 
     def transform(self, X):
