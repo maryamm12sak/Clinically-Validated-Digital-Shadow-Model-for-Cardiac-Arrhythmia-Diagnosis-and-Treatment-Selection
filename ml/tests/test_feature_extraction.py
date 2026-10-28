@@ -33,6 +33,13 @@ def test_nan_input_does_not_raise():
     assert set(feats) == set(all_columns())
 
 
+@pytest.mark.parametrize("hr", [60, 120])
+def test_no_infinite_features(hr):
+    feats = extract_features(_simulated_12_lead(hr), fs=500)
+    values = np.array([feats[n] for n in feature_names()], dtype=float)
+    assert not np.isinf(values).any()
+
+
 def test_feature_names_stable_and_unique():
     names = feature_names()
     assert len(names) == len(set(names))

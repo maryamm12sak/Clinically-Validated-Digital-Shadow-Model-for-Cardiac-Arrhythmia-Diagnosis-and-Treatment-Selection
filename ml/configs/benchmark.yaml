@@ -2,6 +2,7 @@
 data:
   data_root: G:/IBA/FYP/data/ptb-xl-1.0.3
   cache_dir: G:/IBA/FYP/data/cache
+  features_path: G:/IBA/FYP/data/features/features_500hz.csv   # CSV: pyarrow (parquet) not installed
   sampling_rate: 100          # deep models; classical features use feature_sampling_rate
   feature_sampling_rate: 500
   labels_config: configs/labels.yaml   # relative to ml/

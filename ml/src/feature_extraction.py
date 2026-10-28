@@ -17,7 +17,9 @@ Feature groups and names (stable; see feature_names()):
 Bookkeeping columns: meta_rpeak_lead (index into LEAD_ORDER, -1 if none), meta_n_beats,
 err_rpeaks, err_intervals, err_amplitude, err_spectral, err_any (0/1 flags).
 """
+import time
 import warnings
+from pathlib import Path
 
 import neurokit2 as nk
 import numpy as np
@@ -205,6 +207,11 @@ def extract_features(sig, fs=500):
         except Exception:
             flags["err_spectral"] = 1
     flags["err_any"] = int(any(flags.values()))
+    # Undefined values (e.g. sample entropy with no template matches on ~10 RR intervals) -> NaN
+    for name in feature_names():
+        v = feats[name]
+        if v is not None and not np.isfinite(v):
+            feats[name] = np.nan
     feats.update(flags)
     return feats
 
@@ -220,7 +227,8 @@ def _extract_record(path, fs):
     return extract_features(sig, fs)
 
 
-def extract_ptbxl_features(dataset, ecg_ids=None, n_jobs=-1, dev_fraction=None, seed=0):
+def extract_ptbxl_features(dataset, ecg_ids=None, n_jobs=-1, dev_fraction=None, seed=0,
+                           chunk_size=2000, progress=True):
     """
     Features for PTB-XL records at 500 Hz, read straight from the WFDB files.
     dataset: data_loader.PTBXL. ecg_ids: subset (default all). dev_fraction: random fraction for
@@ -231,5 +239,40 @@ def extract_ptbxl_features(dataset, ecg_ids=None, n_jobs=-1, dev_fraction=None, 
         rng = np.random.default_rng(seed)
         ids = np.sort(rng.choice(ids, size=max(1, int(round(len(ids) * dev_fraction))), replace=False))
     paths = [str(dataset.root / dataset.db.at[i, "filename_hr"]) for i in ids]
-    rows = Parallel(n_jobs=n_jobs)(delayed(_extract_record)(p, 500) for p in paths)
+    rows = []
+    with Parallel(n_jobs=n_jobs) as parallel:
+        for start in range(0, len(paths), chunk_size):
+            rows += parallel(delayed(_extract_record)(p, 500) for p in paths[start:start + chunk_size])
+            if progress:
+                print(f"  features: {min(start + chunk_size, len(paths))}/{len(paths)}", flush=True)
     return pd.DataFrame(rows, index=pd.Index(ids, name="ecg_id"), columns=all_columns())
+
+
+def load_or_build_features(dataset, path, force=False, n_jobs=-1, dev_fraction=None):
+    """
+    Read the feature table from `path` (CSV, ecg_id index) or extract and save it.
+    Returns (features DataFrame, info dict with runtime_s, n_records, failure rates, mostly-NaN features).
+    """
+    path = Path(path)
+    info = {"path": str(path), "built": False}
+    if path.exists() and not force:
+        feats = pd.read_csv(path, index_col="ecg_id")
+        if np.isinf(feats[feature_names()].to_numpy(dtype=float)).any():
+            raise ValueError(f"{path} contains infinite values; rebuild it with force=True")
+    else:
+        t0 = time.time()
+        feats = extract_ptbxl_features(dataset, n_jobs=n_jobs, dev_fraction=dev_fraction)
+        info["runtime_s"] = round(time.time() - t0, 1)
+        info["built"] = True
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".partial.csv")
+        feats.to_csv(tmp)
+        tmp.replace(path)
+    info["n_records"] = len(feats)
+    info["failure_rate"] = {c: round(float(feats[c].mean()), 4) for c in ERROR_COLUMNS}
+    nan_frac = feats[feature_names()].isna().mean()
+    info["mostly_nan_features"] = {k: round(float(v), 3) for k, v in nan_frac[nan_frac > 0.5].items()}
+    info["max_nan_fraction_by_group"] = {
+        g: round(float(nan_frac[[n for n in feature_names() if n.startswith(g)]].max()), 3)
+        for g in ("rr_", "int_", "amp_", "psd_", "dwt_")}
+    return feats, info

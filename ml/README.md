@@ -14,9 +14,26 @@ ml/
     labels.py          multi-hot label matrix, tier indices, per-split counts
     preprocessing.py   lead order, resampling, bandpass, normalizer, crops/windows
     feature_extraction.py  hand-crafted features for the classical baselines
+    evaluate.py        AUROC/AUPRC, macro over primary labels, patient-level bootstrap CI
+    models/classical.py    per-label logistic regression, random forest, extra trees, LightGBM
+  benchmark.py         trains on folds 1-8, evaluates on fold 9, writes ml/results/
   tests/               pytest suite
   requirements-ml.txt
 ```
+
+## Classical baselines
+
+```
+cd ml
+python benchmark.py                                   # all runs
+python benchmark.py --models logreg,lightgbm --dev-subset
+python benchmark.py --force                           # rebuild features, redo finished runs
+```
+
+Features are extracted once at 500 Hz to `data.features_path` and reused. Results are appended to
+`ml/results/benchmark_results.csv` and `ml/results/per_class_metrics.csv`; fold-9 predictions and
+fitted models go to `ml/results/predictions/` and `ml/results/models/` (not committed). Finished
+runs are skipped unless `--force`.
 
 ## Setup and tests
 

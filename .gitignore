@@ -4,9 +4,9 @@ __pycache__/
 ptbxl_database.csv
 samples/raw/
 ecg.db
-ml/results/models/
-ml/results/predictions/
 *.npy
 *.npz
 *.parquet
 .pytest_cache/
+ml/results/
+*.log
