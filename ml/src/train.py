@@ -34,12 +34,11 @@ def set_seed(seed):
 
 
 def prepare_signals(X, fs, config, normalizer=None):
-    """Run each record through preprocess() in place (cache is already at target fs), then normalize."""
+    """Run each record through preprocess() (cache is already at target fs), then normalize.
+    Works on a copy: the caller's array is never modified."""
     target_fs = config["data"]["sampling_rate"]
     bp = config["preprocessing"]["bandpass"]
-    X = np.asarray(X, dtype=np.float32)
-    if not X.flags.writeable:
-        X = X.copy()
+    X = np.array(X, dtype=np.float32, copy=True)
     for i in range(len(X)):
         X[i] = preprocess(X[i], fs, target_fs, bandpass_cfg=bp)
     if normalizer is not None:

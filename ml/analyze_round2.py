@@ -146,6 +146,12 @@ def main():
     # (CV-estimated predictions, full-fold-9 predictions, combiner spec)
     targets = {"resnet1d_seed0": (avail["resnet1d"][0], avail["resnet1d"][0],
                                   {"method": "single", "members": ["resnet1d"], "member_seeds": {"resnet1d": [0]}})}
+    # the two candidates pre-declared for the fold-10 test
+    targets["resnet1d_3seed_avg"] = (np.mean(avail["resnet1d"], axis=0), np.mean(avail["resnet1d"], axis=0),
+                                     {"method": "seed_average", "members": ["resnet1d"],
+                                      "member_seeds": {"resnet1d": seeds_of["resnet1d"]}})
+    if ("resnet1d+lightgbm", "mean") in ens_preds:
+        targets["ensemble_resnet1d+lightgbm_mean"] = ens_preds[("resnet1d+lightgbm", "mean")]
     ens_rows = res[res["exceeds_sd_rule"] & ~res["seeds"].str.startswith("seed-matched")]
     if len(ens_rows):
         top = ens_rows.sort_values("macro_auroc", ascending=False).iloc[0]

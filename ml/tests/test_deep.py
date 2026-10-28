@@ -72,6 +72,16 @@ def test_normalizer_uses_train_only(config):
     assert v.mean() < -10                         # val shifted by train statistics, not its own
 
 
+def test_prepare_signals_does_not_modify_input(config):
+    X = np.random.default_rng(2).normal(3.0, 2.0, size=(4, 1000, 12)).astype(np.float32)
+    before = X.copy()
+    norm = PerLeadNormalizer().fit(X)
+    a = prepare_signals(X, 100, config, norm)
+    b = prepare_signals(X, 100, config, norm)
+    assert np.array_equal(X, before)
+    assert np.array_equal(a, b)
+
+
 def test_chunked_normalizer_matches_direct():
     X = np.random.default_rng(1).normal(size=(50, 100, 12)).astype(np.float32) * 5 + 1
     norm = PerLeadNormalizer().fit(X, chunk=7)
