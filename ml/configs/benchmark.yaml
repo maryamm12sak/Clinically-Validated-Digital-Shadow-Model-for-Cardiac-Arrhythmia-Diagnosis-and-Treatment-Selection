@@ -60,3 +60,15 @@ deep_models:
     blocks: [2, 2, 2, 2]
     kernel: 5
     concat_pool: true
+  inception1d:
+    depth: 6
+    nb_filters: 32
+    kss: [39, 19, 9]
+    bottleneck: 32
+    residual_every: 3
+    concat_pool: true
+  cnn_lstm:
+    channels: 128
+    hidden: 128
+    lstm_layers: 2
+    concat_pool: true

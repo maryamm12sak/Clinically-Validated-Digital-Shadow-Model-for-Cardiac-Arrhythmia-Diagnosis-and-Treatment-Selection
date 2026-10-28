@@ -10,7 +10,7 @@ from src.preprocessing import PerLeadNormalizer
 from src.train import predict_records, prepare_signals
 
 
-@pytest.mark.parametrize("name", ["simple_cnn", "resnet1d"])
+@pytest.mark.parametrize("name", ["simple_cnn", "resnet1d", "inception1d", "cnn_lstm"])
 @pytest.mark.parametrize("seconds", [2.5, 10])
 def test_output_shape(name, seconds):
     model = build_model(name).eval()

@@ -44,8 +44,10 @@ RUNS = {  # cli name -> (model, feature set)
     "lightgbm_agesex": ("lightgbm", "signal+age_sex"),
     "simple_cnn": ("simple_cnn", "raw100"),
     "resnet1d": ("resnet1d", "raw100"),
+    "inception1d": ("inception1d", "raw100"),
+    "cnn_lstm": ("cnn_lstm", "raw100"),
 }
-DEEP = {"simple_cnn", "resnet1d"}
+DEEP = {"simple_cnn", "resnet1d", "inception1d", "cnn_lstm"}
 DEFAULT_MODELS = ["logreg", "random_forest", "extra_trees", "lightgbm", "lightgbm_agesex"]
 PTBXL_AGE_OVER_89 = 300     # PTB-XL encodes ages above 89 as 300
 
