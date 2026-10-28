@@ -1,0 +1,155 @@
+{
+  "created_utc": "2026-10-28T16:54:12.390290+00:00",
+  "purpose": "one-time evaluation on PTB-XL fold 10 (test); nothing is refitted after this point",
+  "git_head": "67b7916a1836af424333140a2c8912cd0c84a4c7",
+  "uncommitted_ml_files_at_registration": [
+    "M ml/analyze_round2.py",
+    " M ml/src/train.py",
+    " M ml/tests/test_deep.py",
+    "?? ml/evaluate_test.py",
+    "?? ml/preregister.py"
+  ],
+  "candidates": {
+    "primary": {
+      "name": "resnet1d3+lightgbm3_mean",
+      "definition": "equal-weight average of (ResNet1d seeds 0-2 averaged sigmoid scores) and (LightGBM seeds 0-2 averaged probabilities, signal features)",
+      "model_files": [
+        "ml/results/models/resnet1d__raw100__seed0/best.pt",
+        "ml/results/models/resnet1d__raw100__seed0/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed0/config.yaml",
+        "ml/results/models/resnet1d__raw100__seed1/best.pt",
+        "ml/results/models/resnet1d__raw100__seed1/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed1/config.yaml",
+        "ml/results/models/resnet1d__raw100__seed2/best.pt",
+        "ml/results/models/resnet1d__raw100__seed2/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed2/config.yaml",
+        "ml/results/models/lightgbm__signal__seed0.joblib",
+        "ml/results/models/lightgbm__signal__seed1.joblib",
+        "ml/results/models/lightgbm__signal__seed2.joblib"
+      ],
+      "fitted_file": "ml/results/calibration/ensemble_resnet1d+lightgbm_mean_fitted.json"
+    },
+    "fallback": {
+      "name": "resnet1d3_avg",
+      "definition": "ResNet1d seeds 0-2 averaged sigmoid scores",
+      "model_files": [
+        "ml/results/models/resnet1d__raw100__seed0/best.pt",
+        "ml/results/models/resnet1d__raw100__seed0/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed0/config.yaml",
+        "ml/results/models/resnet1d__raw100__seed1/best.pt",
+        "ml/results/models/resnet1d__raw100__seed1/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed1/config.yaml",
+        "ml/results/models/resnet1d__raw100__seed2/best.pt",
+        "ml/results/models/resnet1d__raw100__seed2/normalizer.json",
+        "ml/results/models/resnet1d__raw100__seed2/config.yaml"
+      ],
+      "fitted_file": "ml/results/calibration/resnet1d_3seed_avg_fitted.json"
+    }
+  },
+  "components": {
+    "resnet1d": [
+      {
+        "seed": 0,
+        "dir": "ml/results/models/resnet1d__raw100__seed0"
+      },
+      {
+        "seed": 1,
+        "dir": "ml/results/models/resnet1d__raw100__seed1"
+      },
+      {
+        "seed": 2,
+        "dir": "ml/results/models/resnet1d__raw100__seed2"
+      }
+    ],
+    "lightgbm": [
+      {
+        "seed": 0,
+        "file": "ml/results/models/lightgbm__signal__seed0.joblib"
+      },
+      {
+        "seed": 1,
+        "file": "ml/results/models/lightgbm__signal__seed1.joblib"
+      },
+      {
+        "seed": 2,
+        "file": "ml/results/models/lightgbm__signal__seed2.joblib"
+      }
+    ]
+  },
+  "features_path": "G:/IBA/FYP/data/features/features_500hz.csv",
+  "features_sha256": "99d1a1b0d9265d14ed9bb199a3acaf235bb3ec05f7a4e0d50ef6ec6da13b124e",
+  "feature_pipeline_cpu_ms_per_record": 121.32666636084224,
+  "labels": {
+    "all": [
+      "NSR",
+      "SBRAD",
+      "STACH",
+      "AFIB",
+      "AFLT",
+      "SVT",
+      "AVB1",
+      "AVB_HIGH",
+      "LBBB",
+      "RBBB",
+      "PVC",
+      "PAC"
+    ],
+    "primary": [
+      "NSR",
+      "SBRAD",
+      "STACH",
+      "AFIB",
+      "AVB1",
+      "LBBB",
+      "RBBB",
+      "PVC",
+      "PAC"
+    ],
+    "exploratory": [
+      "AFLT",
+      "SVT",
+      "AVB_HIGH"
+    ],
+    "rule": "key presence in scp_codes, likelihood ignored"
+  },
+  "threshold_policies": {
+    "max_f1": "per-label threshold maximising F1 on fold 9",
+    "sens90": "sensitivity >= 0.90 on fold 9 for AFIB, AFLT, SVT, AVB_HIGH, LBBB; max_f1 for the other labels"
+  },
+  "calibration": "per label, method (none/temperature/platt) chosen by 5-fold patient-grouped CV log-loss on fold 9, then fitted on all of fold 9",
+  "inference": "100 Hz, per-lead z-score (train-fold statistics), 2.5 s windows, 50% overlap, per-label max over windows, sigmoid; LightGBM from the 500 Hz feature table",
+  "metrics": [
+    "macro-AUROC over the 9 primary labels with 1000x patient-level bootstrap 95% CI",
+    "macro-AUPRC (primary)",
+    "per-label AUROC, AUPRC, prevalence",
+    "per policy: per-label sensitivity, specificity, precision, F1, 2x2 confusion matrix; macro-F1 and micro-F1 over primary labels",
+    "ECE (15 equal-width bins) and Brier, raw vs calibrated",
+    "exploratory labels reported separately with n_pos and a warning",
+    "CPU inference ms/record and model size"
+  ],
+  "sha256": {
+    "ml/configs/benchmark.yaml": "e0ac971dab82644475dc4eae9a6b361f5bfe37717dc173f5855d74345791b26f",
+    "ml/configs/labels.yaml": "5d973263dba5724c113d6ff69a2aaf65a299a4e8934e07e17361580b89cd370e",
+    "ml/evaluate_test.py": "8db855e9b17c453484edc71f1869d259788970033f3e69b5b6f01cf8d45f71da",
+    "ml/results/calibration/ensemble_resnet1d+lightgbm_mean_fitted.json": "068de544284c31bf7b43fa5047e1fea0beebdae7e0d8823b96bc09057b1ca308",
+    "ml/results/calibration/resnet1d_3seed_avg_fitted.json": "2dcfa245d6e0ad3e66040192eda02bc958eb61bd9fbb015466c3f994dd2833d6",
+    "ml/results/models/lightgbm__signal__seed0.joblib": "37154d3336af7d082f1dbe26f5c90a7cd6450b382157f6ba5af157cb3d5e6cb5",
+    "ml/results/models/lightgbm__signal__seed1.joblib": "e93bd7cac43c577f2c832aac35f00153e536103c59a232a7455a694a17f8d4e2",
+    "ml/results/models/lightgbm__signal__seed2.joblib": "00306d017bae627e02956b043b9cf0364c09a4fb5b52e115c71dbf38ef147787",
+    "ml/results/models/resnet1d__raw100__seed0/best.pt": "247fa2c32676b92f0e20bd8cd0b2ecc6e91f51382c0d40f31eba4ba8209ade1b",
+    "ml/results/models/resnet1d__raw100__seed0/config.yaml": "88c15164b5b4fcfbc68b6e2e1a8efd94d6a6f2a42b32d9e96c7c3e2126c5313c",
+    "ml/results/models/resnet1d__raw100__seed0/normalizer.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "ml/results/models/resnet1d__raw100__seed1/best.pt": "b368854f3c25c6da5363572dc2b73105b07904f437e2cdd6df9811655f40174b",
+    "ml/results/models/resnet1d__raw100__seed1/config.yaml": "232ef11e8d25d8342c5e8f61cfd3eca3b9a59453357909795310cbdbbcddca4f",
+    "ml/results/models/resnet1d__raw100__seed1/normalizer.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "ml/results/models/resnet1d__raw100__seed2/best.pt": "52466192f2e8078cf1c60b194cd8f392c022179dca8d271b0fec2f01c2351b37",
+    "ml/results/models/resnet1d__raw100__seed2/config.yaml": "398ceb59f704911d94db24154b1866f3214387e78390d10bc78978888335f9f3",
+    "ml/results/models/resnet1d__raw100__seed2/normalizer.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "ml/src/calibration.py": "0fb3ac92b9d3e0ab093757dcdfda0d62392579802f068c8f47fd07d24fb044ff",
+    "ml/src/evaluate.py": "009b32f05a1c33b987b01e03bc740e830d4e8647097fc94442b7750a894e8757",
+    "ml/src/models/classical.py": "5adb947a72c0ea4000416a43262f9249e5fa2377c390b5efda4a9569362af7c2",
+    "ml/src/models/deep.py": "4fc3f3c19d073388aec93acbe5a6041e58301deadcb282b008b05054bf729b09",
+    "ml/src/preprocessing.py": "da19dc2281029ff861d14834ba322d6633606a7b82ae166d9e3797f25404459e",
+    "ml/src/train.py": "fc4e1c82921cf67f91ebd6b8412c86a0f0ef2d57aa758f8483f8f7ac452799a2"
+  }
+}
