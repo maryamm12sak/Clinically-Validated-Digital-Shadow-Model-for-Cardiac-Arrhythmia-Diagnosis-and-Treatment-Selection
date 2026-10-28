@@ -78,22 +78,44 @@ def _load(files, fs=None):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+EXPLORATORY_NOTE = ("Unvalidated label: too few training examples to measure accuracy. "
+                    "Needs expert review before acting on it.")
+
+
 def _run_analysis(sig, fs, context, test_rhythm=None):
-    probabilities = predictor.predict(sig, fs, test_rhythm=test_rhythm)
+    try:
+        probabilities = predictor.predict(sig, fs, test_rhythm=test_rhythm)
+    except predictor.ModelUnavailableError as e:
+        raise HTTPException(status_code=503,
+                            detail=f"Model unavailable: {e}. No rhythm analysis was performed.")
+    except ValueError as e:   # e.g. recording shorter than 5 s or longer than 60 s
+        raise HTTPException(status_code=400, detail=f"Cannot analyse this ECG: {e}")
+    # per-label thresholds for the real model; the single rules.yaml cut-off for test_rhythm runs
+    thresholds = predictor.THRESHOLDS if (predictor.MODEL_LOADED and not test_rhythm) else None
     measurements, measurement_notes = adjust_measurements(compute_features(sig, fs),
-                                                          detected_rhythms(probabilities))
+                                                          detected_rhythms(probabilities, thresholds))
     rhythms = sorted(
-        [{"id": lid, "name": l["name"], "probability": round(probabilities[lid], 3)}
+        [{"id": lid, "name": l["name"], "probability": round(probabilities[lid], 3),
+          "threshold": round(thresholds[lid], 3) if thresholds else RULES["detection_threshold"],
+          "exploratory": lid in predictor.EXPLORATORY}
          for lid, l in zip(LABEL_IDS, LABELS)],
         key=lambda r: r["probability"], reverse=True)
+    assessment = assess(probabilities, measurements, context, thresholds)
+    for f in assessment["findings"]:
+        f["exploratory"] = f["id"] in predictor.EXPLORATORY
+        if f["exploratory"]:
+            f["note"] = EXPLORATORY_NOTE
+            assessment["warnings"].append({"triage": "green",
+                                           "message": f"{f['name']}: {EXPLORATORY_NOTE}"})
     return {
         "model": {"loaded": predictor.MODEL_LOADED, "version": predictor.MODEL_VERSION,
+                  "probabilities": "calibrated" if thresholds else "test_rhythm (fixed values)",
                   "note": None if predictor.MODEL_LOADED else
-                  "Placeholder rhythm probabilities: the trained model is not plugged in yet."},
+                  f"Model not loaded ({predictor.MODEL_ERROR}); only test_rhythm runs are possible."},
         "rhythms": rhythms,
         "measurements": measurements,
         "measurement_notes": measurement_notes,
-        "assessment": assess(probabilities, measurements, context),
+        "assessment": assessment,
         "ecg": plot_data(sig, fs),
     }
 
@@ -122,7 +144,8 @@ def root():
 @app.get("/health")
 def health():
     """Is the server up, and is the model loaded?"""
-    return {"status": "ok", "model_loaded": predictor.MODEL_LOADED, "model_version": predictor.MODEL_VERSION}
+    return {"status": "ok", "model_loaded": predictor.MODEL_LOADED, "model_version": predictor.MODEL_VERSION,
+            "model_error": predictor.MODEL_ERROR}
 
 
 @app.get("/meta")
@@ -131,9 +154,13 @@ def meta():
     return {
         "labels": [{"id": l["id"], "name": l["name"]} for l in LABELS],
         "model_version": predictor.MODEL_VERSION,
+        "model_loaded": predictor.MODEL_LOADED,
+        "model_error": predictor.MODEL_ERROR,
         "metrics": predictor.METRICS,
         "rules_version": RULES["version"],
         "detection_threshold": RULES["detection_threshold"],
+        "detection_thresholds": predictor.THRESHOLDS or None,
+        "exploratory_labels": sorted(predictor.EXPLORATORY),
         "symptoms": SYMPTOMS,
         "disclaimer": RULES["disclaimer"],
     }

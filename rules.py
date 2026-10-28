@@ -47,9 +47,15 @@ def _apply_rule(label_id, stable, measurements, symptoms):
     return triage, steps
 
 
-def detected_rhythms(probabilities):
-    thr = RULES["detection_threshold"]
-    return [lid for lid, p in probabilities.items() if p >= thr]
+def _threshold(label_id, thresholds):
+    """Per-label threshold from the model if given, else the single cut-off in rules.yaml."""
+    if thresholds and label_id in thresholds:
+        return thresholds[label_id]
+    return RULES["detection_threshold"]
+
+
+def detected_rhythms(probabilities, thresholds=None):
+    return [lid for lid, p in probabilities.items() if p >= _threshold(lid, thresholds)]
 
 
 def adjust_measurements(measurements, detected_ids):
@@ -96,12 +102,11 @@ def _measurement_warnings(measurements, detected_ids):
     return out
 
 
-def assess(probabilities, measurements, context):
-    thr = RULES["detection_threshold"]
+def assess(probabilities, measurements, context, thresholds=None):
     symptoms = context.get("symptoms", [])
     stable, reasons = assess_stability(context)
 
-    detected = sorted([(lid, p) for lid, p in probabilities.items() if p >= thr],
+    detected = sorted([(lid, p) for lid, p in probabilities.items() if p >= _threshold(lid, thresholds)],
                       key=lambda x: x[1], reverse=True)
     if not detected:
         detected = [("UNCERTAIN", max(probabilities.values()) if probabilities else 0.0)]

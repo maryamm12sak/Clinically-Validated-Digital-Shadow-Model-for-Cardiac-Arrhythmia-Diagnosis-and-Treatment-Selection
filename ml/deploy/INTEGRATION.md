@@ -4,6 +4,9 @@ The backend calls `predictor.predict(sig, fs, test_rhythm=None) -> {label_id: pr
 (`main.py`), with `sig` of shape `(samples, 12)` in mV, leads in `labels.py` order, from `ecg_io.read_upload`.
 `ecg_model.predict` has exactly that contract and returns **calibrated** probabilities.
 
+Status: applied on the local branch `model-integration` (predictor.py, main.py, rules.py,
+requirements.txt, API.md, tests/test_model_integration.py).
+
 ## 1. Where the package lives
 
 Keep it in `ml/deploy/` and import it as a package from the repo root (`ml` and `ml/deploy` are

@@ -39,8 +39,9 @@ Response (shortened):
   "analysis_id": 12,
   "filenames": ["ecg.csv"],
   "context": {"age": 58, "sex": "male", "systolic_bp": 85, "symptoms": ["chest_pain"], "stable": null},
-  "model": {"loaded": false, "version": null, "note": "Placeholder rhythm probabilities: ..."},
-  "rhythms": [{"id": "NSR", "name": "Normal sinus rhythm", "probability": 0.91}, "... all 12 labels, highest first"],
+  "model": {"loaded": true, "version": "ptbxl-arrhythmia-v1.0 (resnet_only)", "probabilities": "calibrated", "note": null},
+  "rhythms": [{"id": "NSR", "name": "Normal sinus rhythm", "probability": 0.91, "threshold": 0.51, "exploratory": false},
+              "... all 12 labels, highest first"],
   "measurements": {"heart_rate": 64, "pr_ms": 139, "qrs_ms": 86, "qt_ms": 379, "qtc_ms": 391},
   "measurement_notes": ["PR not reported: there are no organised P waves in atrial fibrillation/flutter."],
   "assessment": {
@@ -49,7 +50,8 @@ Response (shortened):
     "stability": {"stable": false, "reasons": ["Systolic BP 85 mmHg (below 90)"]},
     "findings": [
       {"id": "AFIB", "name": "Atrial fibrillation", "probability": 0.95, "triage": "red",
-       "next_steps": ["Synchronized cardioversion (ACLS: 120-200 J biphasic for atrial fibrillation).", "..."]}
+       "next_steps": ["Synchronized cardioversion (ACLS: 120-200 J biphasic for atrial fibrillation).", "..."],
+       "exploratory": false}
     ],
     "warnings": [{"triage": "amber", "message": "QTc 512 ms (500 or more): ..."}],
     "rules_version": "draft-0.1",
@@ -63,13 +65,28 @@ Response (shortened):
 ```
 
 - `triage` is `green`, `amber` or `red`. Show the overall `assessment.triage` as the main badge.
-- `findings` lists every rhythm at or above the detection threshold (0.5). If none, one finding with id `UNCERTAIN`.
+- `findings` lists every rhythm at or above its detection threshold. If none, one finding with id `UNCERTAIN`.
+  With the trained model, `probability` is a **calibrated** probability and each label has its own
+  `threshold` (fitted on PTB-XL validation data; see `ml/deploy/MODEL_CARD.md`). `test_rhythm` runs keep
+  the single cut-off from `rules.yaml` (0.5).
+- `exploratory: true` marks AFLT, SVT and AVB_HIGH: too few training examples to validate. When one is
+  detected, its finding has a `note` and a warning is added: "Unvalidated label ... Needs expert review".
 - Any measurement can be `null` if it couldn't be measured or doesn't apply to the rhythm (e.g. PR in atrial fibrillation). `measurement_notes` explains why; show these under the measurements.
 - `ecg.leads[i].values` are in mV at `ecg.fs` samples per second (time of sample k = k / fs). Standard ECG paper: 25 mm/s, 10 mm/mV.
 
 All form fields are sent as text; blank fields are treated as "not given". `/parse` takes the same `file`, `file2` and `fs` fields.
 
-Errors: status `400` with `{"detail": "message to show the user"}` (bad file, unknown symptom), `404` for an unknown sample.
+Errors: status `400` with `{"detail": "message to show the user"}` (bad file, unknown symptom, ECG shorter
+than 5 s or longer than 60 s), `404` for an unknown sample.
+
+If the model files could not be loaded at startup, the server still runs, but `/analyze` returns
+**`503`** with `{"detail": "Model unavailable: <reason>. No rhythm analysis was performed."}` and no
+results (the `test_rhythm` testing path still works). `/health` and `/meta` then show
+`"model_loaded": false` and `"model_error": "<reason>"`.
+
+`/meta` also returns `model_loaded`, `model_error`, `metrics` (PTB-XL fold-10 test metrics of the
+shipped model), `detection_thresholds` (`{label_id: threshold}`) and `exploratory_labels`.
+`/health` also returns `model_error`.
 
 ## History and feedback
 
