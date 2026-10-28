@@ -1,0 +1,584 @@
+{
+  "model_version": "ptbxl-arrhythmia-v1.0",
+  "default_mode": "resnet_only",
+  "modes": {
+    "resnet_only": "shipped MVP model: ResNet1d, 3 seeds averaged (ONNX)",
+    "ensemble": "documented upgrade: mean of ResNet1d (3 seeds) and LightGBM (3 seeds); needs lightgbm, neurokit2, PyWavelets and the 500 Hz feature pipeline"
+  },
+  "training_commit": "003acbf3cdd25d83b13dc4f4951f14652e6b8cb4",
+  "preregistration_commit": "14486d8",
+  "labels": [
+    "NSR",
+    "SBRAD",
+    "STACH",
+    "AFIB",
+    "AFLT",
+    "SVT",
+    "AVB1",
+    "AVB_HIGH",
+    "LBBB",
+    "RBBB",
+    "PVC",
+    "PAC"
+  ],
+  "input": {
+    "shape": "(samples, 12)",
+    "units": "mV",
+    "lead_order": [
+      "I",
+      "II",
+      "III",
+      "aVR",
+      "aVL",
+      "aVF",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5",
+      "V6"
+    ],
+    "fs": "any (resampled internally)",
+    "duration_s": [
+      5,
+      60
+    ]
+  },
+  "onnx": {
+    "input": "input float32 [batch, 12, 250] (one 2.5 s window at 100 Hz, per-lead z-scored)",
+    "output": "logits float32 [batch, 12]",
+    "opset": 17
+  },
+  "components": {
+    "resnet1d": [
+      {
+        "seed": 0,
+        "onnx": "models/resnet1d_seed0.onnx",
+        "normalizer": "models/normalizer_seed0.json",
+        "source_checkpoint": "ml/results/models/resnet1d__raw100__seed0/best.pt"
+      },
+      {
+        "seed": 1,
+        "onnx": "models/resnet1d_seed1.onnx",
+        "normalizer": "models/normalizer_seed1.json",
+        "source_checkpoint": "ml/results/models/resnet1d__raw100__seed1/best.pt"
+      },
+      {
+        "seed": 2,
+        "onnx": "models/resnet1d_seed2.onnx",
+        "normalizer": "models/normalizer_seed2.json",
+        "source_checkpoint": "ml/results/models/resnet1d__raw100__seed2/best.pt"
+      }
+    ],
+    "lightgbm": [
+      {
+        "seed": 0,
+        "labels": {
+          "NSR": {
+            "file": "models/lightgbm_seed0_NSR.txt",
+            "num_iteration": 195
+          },
+          "SBRAD": {
+            "file": "models/lightgbm_seed0_SBRAD.txt",
+            "num_iteration": 149
+          },
+          "STACH": {
+            "file": "models/lightgbm_seed0_STACH.txt",
+            "num_iteration": 126
+          },
+          "AFIB": {
+            "file": "models/lightgbm_seed0_AFIB.txt",
+            "num_iteration": 270
+          },
+          "AFLT": {
+            "file": "models/lightgbm_seed0_AFLT.txt",
+            "num_iteration": 1
+          },
+          "SVT": {
+            "file": "models/lightgbm_seed0_SVT.txt",
+            "num_iteration": 162
+          },
+          "AVB1": {
+            "file": "models/lightgbm_seed0_AVB1.txt",
+            "num_iteration": 3
+          },
+          "AVB_HIGH": {
+            "file": "models/lightgbm_seed0_AVB_HIGH.txt",
+            "num_iteration": -1
+          },
+          "LBBB": {
+            "file": "models/lightgbm_seed0_LBBB.txt",
+            "num_iteration": 107
+          },
+          "RBBB": {
+            "file": "models/lightgbm_seed0_RBBB.txt",
+            "num_iteration": 254
+          },
+          "PVC": {
+            "file": "models/lightgbm_seed0_PVC.txt",
+            "num_iteration": 394
+          },
+          "PAC": {
+            "file": "models/lightgbm_seed0_PAC.txt",
+            "num_iteration": 9
+          }
+        },
+        "source": "ml/results/models/lightgbm__signal__seed0.joblib"
+      },
+      {
+        "seed": 1,
+        "labels": {
+          "NSR": {
+            "file": "models/lightgbm_seed1_NSR.txt",
+            "num_iteration": 153
+          },
+          "SBRAD": {
+            "file": "models/lightgbm_seed1_SBRAD.txt",
+            "num_iteration": 334
+          },
+          "STACH": {
+            "file": "models/lightgbm_seed1_STACH.txt",
+            "num_iteration": 329
+          },
+          "AFIB": {
+            "file": "models/lightgbm_seed1_AFIB.txt",
+            "num_iteration": 551
+          },
+          "AFLT": {
+            "file": "models/lightgbm_seed1_AFLT.txt",
+            "num_iteration": 2
+          },
+          "SVT": {
+            "file": "models/lightgbm_seed1_SVT.txt",
+            "num_iteration": 146
+          },
+          "AVB1": {
+            "file": "models/lightgbm_seed1_AVB1.txt",
+            "num_iteration": 6
+          },
+          "AVB_HIGH": {
+            "file": "models/lightgbm_seed1_AVB_HIGH.txt",
+            "num_iteration": 2
+          },
+          "LBBB": {
+            "file": "models/lightgbm_seed1_LBBB.txt",
+            "num_iteration": 679
+          },
+          "RBBB": {
+            "file": "models/lightgbm_seed1_RBBB.txt",
+            "num_iteration": 267
+          },
+          "PVC": {
+            "file": "models/lightgbm_seed1_PVC.txt",
+            "num_iteration": 432
+          },
+          "PAC": {
+            "file": "models/lightgbm_seed1_PAC.txt",
+            "num_iteration": 6
+          }
+        },
+        "source": "ml/results/models/lightgbm__signal__seed1.joblib"
+      },
+      {
+        "seed": 2,
+        "labels": {
+          "NSR": {
+            "file": "models/lightgbm_seed2_NSR.txt",
+            "num_iteration": 185
+          },
+          "SBRAD": {
+            "file": "models/lightgbm_seed2_SBRAD.txt",
+            "num_iteration": 57
+          },
+          "STACH": {
+            "file": "models/lightgbm_seed2_STACH.txt",
+            "num_iteration": 208
+          },
+          "AFIB": {
+            "file": "models/lightgbm_seed2_AFIB.txt",
+            "num_iteration": 150
+          },
+          "AFLT": {
+            "file": "models/lightgbm_seed2_AFLT.txt",
+            "num_iteration": 1
+          },
+          "SVT": {
+            "file": "models/lightgbm_seed2_SVT.txt",
+            "num_iteration": 3
+          },
+          "AVB1": {
+            "file": "models/lightgbm_seed2_AVB1.txt",
+            "num_iteration": 3
+          },
+          "AVB_HIGH": {
+            "file": "models/lightgbm_seed2_AVB_HIGH.txt",
+            "num_iteration": 2
+          },
+          "LBBB": {
+            "file": "models/lightgbm_seed2_LBBB.txt",
+            "num_iteration": 143
+          },
+          "RBBB": {
+            "file": "models/lightgbm_seed2_RBBB.txt",
+            "num_iteration": 83
+          },
+          "PVC": {
+            "file": "models/lightgbm_seed2_PVC.txt",
+            "num_iteration": 557
+          },
+          "PAC": {
+            "file": "models/lightgbm_seed2_PAC.txt",
+            "num_iteration": 4
+          }
+        },
+        "source": "ml/results/models/lightgbm__signal__seed2.joblib"
+      }
+    ]
+  },
+  "parity_fold9": {
+    "resnet": {
+      "seed0": {
+        "n_windows": 15281,
+        "max_abs_logit_diff": 1.33514404296875e-05
+      },
+      "seed1": {
+        "n_windows": 15281,
+        "max_abs_logit_diff": 1.239776611328125e-05
+      },
+      "seed2": {
+        "n_windows": 15281,
+        "max_abs_logit_diff": 1.239776611328125e-05
+      },
+      "macro_auroc_fold9_torch": 0.9787130368784241,
+      "macro_auroc_fold9_onnx": 0.9787130368784241,
+      "max_abs_prob_diff_vs_saved_fold9": 4.1308674977869053e-07
+    },
+    "lightgbm": {
+      "seed0_max_abs_prob_diff_text_vs_sklearn": 0.0,
+      "seed1_max_abs_prob_diff_text_vs_sklearn": 0.0,
+      "seed2_max_abs_prob_diff_text_vs_sklearn": 0.0
+    },
+    "ensemble_max_abs_prob_diff_vs_saved": 2.0654337488934527e-07
+  },
+  "test_metrics": {
+    "ensemble": {
+      "dataset": "PTB-XL v1.0.3 fold 10 (held-out test fold, evaluated once)",
+      "n_records": 2198,
+      "macro_auroc_primary": 0.9768,
+      "macro_auroc_95ci": [
+        0.9727,
+        0.9806
+      ],
+      "macro_auprc_primary": 0.8046,
+      "macro_f1_primary_max_f1": 0.7751,
+      "micro_f1_primary_max_f1": 0.8922,
+      "per_label": {
+        "NSR": {
+          "tier": "primary",
+          "n_pos": 1674,
+          "auroc": 0.9095,
+          "auprc": 0.9602,
+          "sensitivity_max_f1": 0.9767,
+          "specificity_max_f1": 0.6412,
+          "sensitivity_high_sens": 0.9767,
+          "specificity_high_sens": 0.6412
+        },
+        "SBRAD": {
+          "tier": "primary",
+          "n_pos": 64,
+          "auroc": 0.9556,
+          "auprc": 0.6274,
+          "sensitivity_max_f1": 0.5156,
+          "specificity_max_f1": 0.9967,
+          "sensitivity_high_sens": 0.5156,
+          "specificity_high_sens": 0.9967
+        },
+        "STACH": {
+          "tier": "primary",
+          "n_pos": 82,
+          "auroc": 0.9962,
+          "auprc": 0.9203,
+          "sensitivity_max_f1": 0.939,
+          "specificity_max_f1": 0.992,
+          "sensitivity_high_sens": 0.939,
+          "specificity_high_sens": 0.992
+        },
+        "AFIB": {
+          "tier": "primary",
+          "n_pos": 152,
+          "auroc": 0.9873,
+          "auprc": 0.9338,
+          "sensitivity_max_f1": 0.8553,
+          "specificity_max_f1": 0.9941,
+          "sensitivity_high_sens": 0.9145,
+          "specificity_high_sens": 0.9927
+        },
+        "AFLT": {
+          "tier": "exploratory",
+          "n_pos": 7,
+          "auroc": 0.9525,
+          "auprc": 0.5982,
+          "sensitivity_max_f1": 0.4286,
+          "specificity_max_f1": 1.0,
+          "sensitivity_high_sens": 0.8571,
+          "specificity_high_sens": 0.869
+        },
+        "SVT": {
+          "tier": "exploratory",
+          "n_pos": 5,
+          "auroc": 0.9975,
+          "auprc": 0.5524,
+          "sensitivity_max_f1": 0.6,
+          "specificity_max_f1": 0.9991,
+          "sensitivity_high_sens": 0.8,
+          "specificity_high_sens": 0.9941
+        },
+        "AVB1": {
+          "tier": "primary",
+          "n_pos": 79,
+          "auroc": 0.9778,
+          "auprc": 0.6011,
+          "sensitivity_max_f1": 0.6962,
+          "specificity_max_f1": 0.9736,
+          "sensitivity_high_sens": 0.6962,
+          "specificity_high_sens": 0.9736
+        },
+        "AVB_HIGH": {
+          "tier": "exploratory",
+          "n_pos": 3,
+          "auroc": 0.9783,
+          "auprc": 0.3962,
+          "sensitivity_max_f1": 0.3333,
+          "specificity_max_f1": 0.9995,
+          "sensitivity_high_sens": 0.3333,
+          "specificity_high_sens": 0.9964
+        },
+        "LBBB": {
+          "tier": "primary",
+          "n_pos": 54,
+          "auroc": 0.9978,
+          "auprc": 0.9365,
+          "sensitivity_max_f1": 0.9259,
+          "specificity_max_f1": 0.9967,
+          "sensitivity_high_sens": 0.963,
+          "specificity_high_sens": 0.9925
+        },
+        "RBBB": {
+          "tier": "primary",
+          "n_pos": 54,
+          "auroc": 0.9982,
+          "auprc": 0.9243,
+          "sensitivity_max_f1": 0.963,
+          "specificity_max_f1": 0.9921,
+          "sensitivity_high_sens": 0.963,
+          "specificity_high_sens": 0.9921
+        },
+        "PVC": {
+          "tier": "primary",
+          "n_pos": 114,
+          "auroc": 0.993,
+          "auprc": 0.8532,
+          "sensitivity_max_f1": 0.8158,
+          "specificity_max_f1": 0.9866,
+          "sensitivity_high_sens": 0.8158,
+          "specificity_high_sens": 0.9866
+        },
+        "PAC": {
+          "tier": "primary",
+          "n_pos": 40,
+          "auroc": 0.9754,
+          "auprc": 0.484,
+          "sensitivity_max_f1": 0.55,
+          "specificity_max_f1": 0.9903,
+          "sensitivity_high_sens": 0.55,
+          "specificity_high_sens": 0.9903
+        }
+      }
+    },
+    "resnet_only": {
+      "dataset": "PTB-XL v1.0.3 fold 10 (held-out test fold, evaluated once)",
+      "n_records": 2198,
+      "macro_auroc_primary": 0.9709,
+      "macro_auroc_95ci": [
+        0.9661,
+        0.9755
+      ],
+      "macro_auprc_primary": 0.7864,
+      "macro_f1_primary_max_f1": 0.7681,
+      "micro_f1_primary_max_f1": 0.8868,
+      "per_label": {
+        "NSR": {
+          "tier": "primary",
+          "n_pos": 1674,
+          "auroc": 0.8674,
+          "auprc": 0.9407,
+          "sensitivity_max_f1": 0.9743,
+          "specificity_max_f1": 0.584,
+          "sensitivity_high_sens": 0.9743,
+          "specificity_high_sens": 0.584
+        },
+        "SBRAD": {
+          "tier": "primary",
+          "n_pos": 64,
+          "auroc": 0.9508,
+          "auprc": 0.5768,
+          "sensitivity_max_f1": 0.4375,
+          "specificity_max_f1": 0.9939,
+          "sensitivity_high_sens": 0.4375,
+          "specificity_high_sens": 0.9939
+        },
+        "STACH": {
+          "tier": "primary",
+          "n_pos": 82,
+          "auroc": 0.9962,
+          "auprc": 0.9115,
+          "sensitivity_max_f1": 0.9146,
+          "specificity_max_f1": 0.9934,
+          "sensitivity_high_sens": 0.9146,
+          "specificity_high_sens": 0.9934
+        },
+        "AFIB": {
+          "tier": "primary",
+          "n_pos": 152,
+          "auroc": 0.9827,
+          "auprc": 0.9323,
+          "sensitivity_max_f1": 0.8816,
+          "specificity_max_f1": 0.9932,
+          "sensitivity_high_sens": 0.875,
+          "specificity_high_sens": 0.9936
+        },
+        "AFLT": {
+          "tier": "exploratory",
+          "n_pos": 7,
+          "auroc": 0.955,
+          "auprc": 0.6231,
+          "sensitivity_max_f1": 0.0,
+          "specificity_max_f1": 1.0,
+          "sensitivity_high_sens": 0.8571,
+          "specificity_high_sens": 0.9251
+        },
+        "SVT": {
+          "tier": "exploratory",
+          "n_pos": 5,
+          "auroc": 0.996,
+          "auprc": 0.3483,
+          "sensitivity_max_f1": 0.6,
+          "specificity_max_f1": 0.9954,
+          "sensitivity_high_sens": 0.6,
+          "specificity_high_sens": 0.9954
+        },
+        "AVB1": {
+          "tier": "primary",
+          "n_pos": 79,
+          "auroc": 0.9788,
+          "auprc": 0.6031,
+          "sensitivity_max_f1": 0.6203,
+          "specificity_max_f1": 0.9802,
+          "sensitivity_high_sens": 0.6203,
+          "specificity_high_sens": 0.9802
+        },
+        "AVB_HIGH": {
+          "tier": "exploratory",
+          "n_pos": 3,
+          "auroc": 0.9962,
+          "auprc": 0.5926,
+          "sensitivity_max_f1": 0.6667,
+          "specificity_max_f1": 0.9995,
+          "sensitivity_high_sens": 0.6667,
+          "specificity_high_sens": 0.9995
+        },
+        "LBBB": {
+          "tier": "primary",
+          "n_pos": 54,
+          "auroc": 0.9965,
+          "auprc": 0.8937,
+          "sensitivity_max_f1": 0.9074,
+          "specificity_max_f1": 0.9958,
+          "sensitivity_high_sens": 0.963,
+          "specificity_high_sens": 0.9916
+        },
+        "RBBB": {
+          "tier": "primary",
+          "n_pos": 54,
+          "auroc": 0.9984,
+          "auprc": 0.9317,
+          "sensitivity_max_f1": 0.9815,
+          "specificity_max_f1": 0.9925,
+          "sensitivity_high_sens": 0.9815,
+          "specificity_high_sens": 0.9925
+        },
+        "PVC": {
+          "tier": "primary",
+          "n_pos": 114,
+          "auroc": 0.991,
+          "auprc": 0.7943,
+          "sensitivity_max_f1": 0.9386,
+          "specificity_max_f1": 0.9842,
+          "sensitivity_high_sens": 0.9386,
+          "specificity_high_sens": 0.9842
+        },
+        "PAC": {
+          "tier": "primary",
+          "n_pos": 40,
+          "auroc": 0.9761,
+          "auprc": 0.4936,
+          "sensitivity_max_f1": 0.6,
+          "specificity_max_f1": 0.9875,
+          "sensitivity_high_sens": 0.6,
+          "specificity_high_sens": 0.9875
+        }
+      }
+    }
+  },
+  "sha256": {
+    "calibration_ensemble.json": "068de544284c31bf7b43fa5047e1fea0beebdae7e0d8823b96bc09057b1ca308",
+    "calibration_resnet_only.json": "2dcfa245d6e0ad3e66040192eda02bc958eb61bd9fbb015466c3f994dd2833d6",
+    "ecg_model.py": "b499720ce4df172c11573b1d1574880f22a8530a4a30b33e7e243f1fd91c0534",
+    "feature_columns.json": "12f8591c24e4796cf2a9dbe81ec9990fbfe9cb5b0b4f2988099a3722e0385474",
+    "features.py": "1cc6046efa8b4f9b1953af43e068d1d18425c720d6ad406fe104441186633171",
+    "labels.yaml": "5d973263dba5724c113d6ff69a2aaf65a299a4e8934e07e17361580b89cd370e",
+    "models/lightgbm_seed0_AFIB.txt": "558771a5902f52eb28d5b5f952f8fdda74b26633eda1b7936452e55323632b75",
+    "models/lightgbm_seed0_AFLT.txt": "9f9d75ca4fdc91a1ebee17732c5bf201a811da80ffc1f7e1f32ea982e1c7aa01",
+    "models/lightgbm_seed0_AVB1.txt": "0320d8d86627b3a88c9ac32fd24f0dadaaec039483913a494a2eba8e5c4170fd",
+    "models/lightgbm_seed0_AVB_HIGH.txt": "188a07e6aaee9fe36f729715fdd625f74bc2a2fe9d38e456085e6f725aaec760",
+    "models/lightgbm_seed0_LBBB.txt": "f6e88fec15ff3207781c831e184a25d0e959738b5d7d21cc1b9ac2d6511afa22",
+    "models/lightgbm_seed0_NSR.txt": "aa12e894351448fed69859c7ae84a7535637952d55edfe686e90f437d29413c4",
+    "models/lightgbm_seed0_PAC.txt": "dee272d779bcf3459f2e100c5344dd93ea893450f0ab85c50c9f7e20a697ba4c",
+    "models/lightgbm_seed0_PVC.txt": "d9c6acc81cccab63415c2182fdd46674ef0032b3ea640d98bd7b2e84c0492c7f",
+    "models/lightgbm_seed0_RBBB.txt": "70a5bc679cb2dfa140692d82eb349d9dfe56604b769577f569d4af40dd90fbac",
+    "models/lightgbm_seed0_SBRAD.txt": "d6039afb8685de98f0ecdc64455921aac98d4e9906d698a033c61e403d313693",
+    "models/lightgbm_seed0_STACH.txt": "95061932cd246fd69ba1159a79548e3d33217cb7b476c7550683750b6f8c021d",
+    "models/lightgbm_seed0_SVT.txt": "42e3a159f426734d17aec0ef4cd6142ff5e8f0209e1ef36f5bb85a3a6f9abe51",
+    "models/lightgbm_seed1_AFIB.txt": "b744c639c477cc968bec6a6a7ac1b526c0994652f6d6f8e47b230766e43d1543",
+    "models/lightgbm_seed1_AFLT.txt": "66e479337ebe4d496a62a0704b727278920f7886545f3cb5e512232bbc5fd5b1",
+    "models/lightgbm_seed1_AVB1.txt": "b11896aa0ea5c86aedf8eba5dfed44a5ac5ab3d915f40d9815c30d95e9ac802b",
+    "models/lightgbm_seed1_AVB_HIGH.txt": "fec09cd77480217fbcdbd04b53216045e504438f62e1c85eefea2a57d1286ff9",
+    "models/lightgbm_seed1_LBBB.txt": "f68d86c9ac6a9943ae1fc232dfdee53164c7b7d334cf71af42f3ca2e0eb2bba1",
+    "models/lightgbm_seed1_NSR.txt": "e3cac695887b9f45e6140b45d3ee40ceacbc7dcbf47a08a8312f5e0b1a7a3e59",
+    "models/lightgbm_seed1_PAC.txt": "2898ec36caaf0462d05ccffd2232493e2328ad0ed52e063aab5ba678572f6c62",
+    "models/lightgbm_seed1_PVC.txt": "b61cef2a032c013ac62fd6c4238ae29b18aab4f2515021bdc01e98982692f373",
+    "models/lightgbm_seed1_RBBB.txt": "9190d719a4a0a7c7f918c82cb68822ea451b8cbfa2b5fc0d533452f259df779a",
+    "models/lightgbm_seed1_SBRAD.txt": "54047e2ab1e2d6167b2926644a04110e9287551d0d6808ac1ac0af5da26ab214",
+    "models/lightgbm_seed1_STACH.txt": "d17f0df1007a7f3c5dfb43c5659a23142ed72a1ffede2d6cf29807b1f47fc64c",
+    "models/lightgbm_seed1_SVT.txt": "5900830216b5d3934aa03da9bd24467fbdccd30aa9b942087a479d27ff0f483c",
+    "models/lightgbm_seed2_AFIB.txt": "cfd1023fbff3836666360c98178219b8c69e88fffe3698128e75c4f9c28e891a",
+    "models/lightgbm_seed2_AFLT.txt": "00d1c6f5536d26ac60edf506e82060598206cf6916d39c213d7feb5bdc49a14c",
+    "models/lightgbm_seed2_AVB1.txt": "a2749ed4b7e7ac61341cd1eefe0d4a241d54df8c2b82a31a3e6b016caf8eab84",
+    "models/lightgbm_seed2_AVB_HIGH.txt": "81adfaf020d6e4ce966966d3207443d33aa51d24a62ac5da7cfc33914368b582",
+    "models/lightgbm_seed2_LBBB.txt": "ac2902fa91c592f9a5b1f18b133531c2d3818f02ee348fa8160ed3e444284e84",
+    "models/lightgbm_seed2_NSR.txt": "c8e232cb7b7ebcd4283a29188debb3428663b90ddceae18a94e3a39a90c559dd",
+    "models/lightgbm_seed2_PAC.txt": "9ee274c99613f8236d943003c6e20ef4f283f4d46a71f885ade1c92f0b925b87",
+    "models/lightgbm_seed2_PVC.txt": "566872f509c98b77552e3d556ebba85b59c67ba54d39e1c2f249d28a77ac23b8",
+    "models/lightgbm_seed2_RBBB.txt": "2ff5161a627b414a7fc98b5c5d58087fffe1d24035c00cdcd441062725eb9f1d",
+    "models/lightgbm_seed2_SBRAD.txt": "16120d7a2fc9315114abf648031fdf08a8139618260181111b5feb8c58ee0fcc",
+    "models/lightgbm_seed2_STACH.txt": "8f0ef269bd530e3f18007d1fc72523b7c9f89b2677a499b09e1e399c015a9f26",
+    "models/lightgbm_seed2_SVT.txt": "b9bc54cc5041823681b08c32d6827871ade9dd6bfb2febfbe5df3a1bf2e81e24",
+    "models/normalizer_seed0.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "models/normalizer_seed1.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "models/normalizer_seed2.json": "bd1744a865dc3754d318f76e628d59378664e00b500e6a80e35291dbc9fa893e",
+    "models/resnet1d_seed0.onnx": "51beaf4bb4e83e6cb6f93b90584228a6a1a4c4e9337d9457a3d6c09b12639e74",
+    "models/resnet1d_seed1.onnx": "54b36de1af16f23fbfd092346263af354feaa34258dd92bd7a5dd9f3307a0def",
+    "models/resnet1d_seed2.onnx": "a0c820012cb3c34c1c46b698393f998701bc209a0811b1c698cdc2f3c6d076a3",
+    "preprocess.py": "83d24184d68ab307427fb74a2eca39d2e971a952317443002d1892f2acf99cb6"
+  }
+}

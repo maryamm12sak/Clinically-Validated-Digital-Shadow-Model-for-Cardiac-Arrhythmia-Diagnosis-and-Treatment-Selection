@@ -1,0 +1,24 @@
+# Product labels and their PTB-XL SCP codes. Same order as labels.py at the repo root.
+#
+# Rule: a label is positive when ANY of its SCP code KEYS is present in the record's scp_codes
+# dict, ignoring the likelihood value. PTB-XL stores most rhythm statements (SR, AFIB, ...) with
+# likelihood 0, so filtering on likelihood > 0 would drop them. Merged groups are a logical OR.
+#
+# primary: validated targets, included in macro-AUROC.
+# exploratory: too few PTB-XL records to validate (single digits in folds 9/10); reported
+# separately and excluded from macro-AUROC.
+rule: key_presence_ignore_likelihood
+
+labels:
+  - {id: NSR,      name: Normal sinus rhythm,             scp_codes: [SR],          tier: primary}
+  - {id: SBRAD,    name: Sinus bradycardia,               scp_codes: [SBRAD],       tier: primary}
+  - {id: STACH,    name: Sinus tachycardia,               scp_codes: [STACH],       tier: primary}
+  - {id: AFIB,     name: Atrial fibrillation,             scp_codes: [AFIB],        tier: primary}
+  - {id: AFLT,     name: Atrial flutter,                  scp_codes: [AFLT],        tier: exploratory}
+  - {id: SVT,      name: Supraventricular tachycardia,    scp_codes: [SVTAC, PSVT], tier: exploratory}
+  - {id: AVB1,     name: First-degree AV block,           scp_codes: [1AVB],        tier: primary}
+  - {id: AVB_HIGH, name: Second/third-degree AV block,    scp_codes: [2AVB, 3AVB],  tier: exploratory}
+  - {id: LBBB,     name: Left bundle branch block,        scp_codes: [CLBBB],       tier: primary}
+  - {id: RBBB,     name: Right bundle branch block,       scp_codes: [CRBBB],       tier: primary}
+  - {id: PVC,      name: Premature ventricular complexes, scp_codes: [PVC],         tier: primary}
+  - {id: PAC,      name: Premature atrial complexes,      scp_codes: [PAC],         tier: primary}
