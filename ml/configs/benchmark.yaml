@@ -1,0 +1,42 @@
+# Benchmark configuration. Paths are absolute on Ali's machine; override per machine.
+data:
+  data_root: G:/IBA/FYP/data/ptb-xl-1.0.3
+  cache_dir: G:/IBA/FYP/data/cache
+  sampling_rate: 100          # deep models; classical features use feature_sampling_rate
+  feature_sampling_rate: 500
+  labels_config: configs/labels.yaml   # relative to ml/
+  exclude_invalid: false      # if true, drop records failing validation (see data_loader reason codes)
+
+splits:
+  train: [1, 2, 3, 4, 5, 6, 7, 8]
+  val: [9]
+  test: [10]
+  test_locked: true           # fold 10 is only readable with allow_test=True
+
+seeds: [0, 1, 2]
+
+dev_subset:
+  enabled: false
+  fraction: 0.1               # stratification not applied; random sample of records per split
+  seed: 0
+
+preprocessing:
+  window_s: 2.5
+  inference_overlap: 0.5
+  normalization: per_lead_zscore   # fit on train split only
+  bandpass:
+    enabled: false
+    low_hz: 0.5
+    high_hz: 40.0
+    order: 4
+
+features:
+  r_peak_lead: II
+  r_peak_fallback_leads: [V5, I]
+  n_jobs: -1
+
+models:
+  # Placeholders; filled in during the modelling phase.
+  logistic_regression: {}
+  lightgbm: {}
+  cnn_1d: {}
