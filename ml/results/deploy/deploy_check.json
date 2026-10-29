@@ -1,0 +1,282 @@
+{
+ "component_parity": {
+  "resnet_max_abs_diff": 4.1308674977869053e-07,
+  "lightgbm_max_abs_diff": 0.0,
+  "ensemble_max_abs_diff": 2.0654337488934527e-07
+ },
+ "end_to_end_from_500hz": {
+  "resnet_only": {
+   "max_abs_prob_diff": 0.5774949050509085,
+   "mean_abs_prob_diff": 0.0010994441875605558,
+   "p99_abs_prob_diff": 0.017186513514347468,
+   "macro_auroc_fold9": 0.9787201972120722,
+   "macro_auroc_fold9_saved": 0.9787129071832984
+  },
+  "ensemble": {
+   "max_abs_prob_diff": 0.28874745252545425,
+   "mean_abs_prob_diff": 0.000549722093780278,
+   "p99_abs_prob_diff": 0.008593256757173734,
+   "macro_auroc_fold9": 0.9838314941699474,
+   "macro_auroc_fold9_saved": 0.9837574955455799
+  }
+ },
+ "fold9_records": 2183,
+ "wall_s": 247.0,
+ "mean_ms_per_record_ensemble_single_process": 137.0,
+ "lightgbm_e2e_max_abs_diff": 0.0,
+ "demo": [
+  {
+   "file": "normal.csv",
+   "expected": "Normal sinus rhythm",
+   "fs": 100,
+   "runtime_ms": 15.5,
+   "top3": [
+    [
+     "NSR",
+     0.938,
+     true
+    ],
+    [
+     "SBRAD",
+     0.007,
+     false
+    ],
+    [
+     "LBBB",
+     0.001,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "sinus_brady.csv",
+   "expected": "Sinus bradycardia",
+   "fs": 100,
+   "runtime_ms": 14.6,
+   "top3": [
+    [
+     "SBRAD",
+     0.779,
+     true
+    ],
+    [
+     "NSR",
+     0.005,
+     false
+    ],
+    [
+     "AVB1",
+     0.003,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "sinus_tachy.csv",
+   "expected": "Sinus tachycardia",
+   "fs": 100,
+   "runtime_ms": 14.8,
+   "top3": [
+    [
+     "STACH",
+     0.957,
+     true
+    ],
+    [
+     "PAC",
+     0.009,
+     false
+    ],
+    [
+     "PVC",
+     0.003,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "afib.csv",
+   "expected": "Atrial fibrillation",
+   "fs": 100,
+   "runtime_ms": 14.7,
+   "top3": [
+    [
+     "AFIB",
+     0.987,
+     true
+    ],
+    [
+     "PVC",
+     0.005,
+     false
+    ],
+    [
+     "AVB1",
+     0.004,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "aflutter.csv",
+   "expected": "Atrial flutter",
+   "fs": 100,
+   "runtime_ms": 14.8,
+   "top3": [
+    [
+     "SVT",
+     0.43,
+     true
+    ],
+    [
+     "AFIB",
+     0.231,
+     false
+    ],
+    [
+     "AFLT",
+     0.223,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "avb1.csv",
+   "expected": "First-degree AV block",
+   "fs": 100,
+   "runtime_ms": 14.7,
+   "top3": [
+    [
+     "NSR",
+     0.92,
+     true
+    ],
+    [
+     "AVB1",
+     0.401,
+     true
+    ],
+    [
+     "SBRAD",
+     0.004,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "avb3.csv",
+   "expected": "Third-degree (complete) AV block",
+   "fs": 100,
+   "runtime_ms": 14.6,
+   "top3": [
+    [
+     "AVB_HIGH",
+     1.0,
+     true
+    ],
+    [
+     "RBBB",
+     0.64,
+     true
+    ],
+    [
+     "AVB1",
+     0.502,
+     true
+    ]
+   ]
+  },
+  {
+   "file": "lbbb.csv",
+   "expected": "Left bundle branch block",
+   "fs": 100,
+   "runtime_ms": 14.5,
+   "top3": [
+    [
+     "LBBB",
+     0.946,
+     true
+    ],
+    [
+     "NSR",
+     0.685,
+     true
+    ],
+    [
+     "SBRAD",
+     0.322,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "rbbb.csv",
+   "expected": "Right bundle branch block",
+   "fs": 100,
+   "runtime_ms": 14.5,
+   "top3": [
+    [
+     "RBBB",
+     0.899,
+     true
+    ],
+    [
+     "NSR",
+     0.869,
+     true
+    ],
+    [
+     "AVB1",
+     0.223,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "pvc.csv",
+   "expected": "Premature ventricular complexes",
+   "fs": 100,
+   "runtime_ms": 14.7,
+   "top3": [
+    [
+     "PVC",
+     0.984,
+     true
+    ],
+    [
+     "NSR",
+     0.867,
+     true
+    ],
+    [
+     "PAC",
+     0.151,
+     false
+    ]
+   ]
+  },
+  {
+   "file": "../ecg_00001_500hz.csv",
+   "expected": "PTB-XL ecg 1 (500 Hz)",
+   "fs": 500,
+   "runtime_ms": 15.6,
+   "top3": [
+    [
+     "NSR",
+     0.963,
+     true
+    ],
+    [
+     "SBRAD",
+     0.003,
+     false
+    ],
+    [
+     "LBBB",
+     0.0,
+     false
+    ]
+   ]
+  }
+ ]
+}

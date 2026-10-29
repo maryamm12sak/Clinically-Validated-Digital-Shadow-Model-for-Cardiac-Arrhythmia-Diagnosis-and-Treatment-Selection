@@ -8,5 +8,23 @@ ecg.db
 *.npz
 *.parquet
 .pytest_cache/
-ml/results/
 *.log
+.venv/
+# ML results: everything is ignored except small, informative files (checkpoints stay local)
+ml/results/*
+!ml/results/benchmark_results.csv
+!ml/results/per_class_metrics.csv
+!ml/results/final/
+ml/results/final/*
+!ml/results/final/preregistration.json
+!ml/results/final/test_metrics.csv
+!ml/results/final/test_per_class.csv
+!ml/results/final/test_access_log.txt
+!ml/results/final/*_fold10_predictions.npz
+!ml/results/final/*_fold9_dryrun.csv
+!ml/results/ensembles/
+!ml/results/calibration/
+ml/results/calibration/*
+!ml/results/calibration/*_fitted.json
+!ml/results/plots/
+!ml/results/deploy/

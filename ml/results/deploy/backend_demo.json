@@ -1,0 +1,294 @@
+[
+ {
+  "file": "normal.csv",
+  "expected": "Normal sinus rhythm",
+  "latency_ms": 245.7,
+  "top3": [
+   [
+    "NSR",
+    0.938,
+    true
+   ],
+   [
+    "SBRAD",
+    0.007,
+    false
+   ],
+   [
+    "AVB1",
+    0.001,
+    false
+   ]
+  ],
+  "findings": [
+   "NSR"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "sinus_brady.csv",
+  "expected": "Sinus bradycardia",
+  "latency_ms": 225.5,
+  "top3": [
+   [
+    "SBRAD",
+    0.779,
+    true
+   ],
+   [
+    "NSR",
+    0.005,
+    false
+   ],
+   [
+    "AVB1",
+    0.003,
+    false
+   ]
+  ],
+  "findings": [
+   "SBRAD"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "sinus_tachy.csv",
+  "expected": "Sinus tachycardia",
+  "latency_ms": 255.8,
+  "top3": [
+   [
+    "STACH",
+    0.957,
+    true
+   ],
+   [
+    "PAC",
+    0.009,
+    false
+   ],
+   [
+    "PVC",
+    0.003,
+    false
+   ]
+  ],
+  "findings": [
+   "STACH"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "afib.csv",
+  "expected": "Atrial fibrillation",
+  "latency_ms": 266.2,
+  "top3": [
+   [
+    "AFIB",
+    0.987,
+    true
+   ],
+   [
+    "PVC",
+    0.005,
+    false
+   ],
+   [
+    "AVB1",
+    0.004,
+    false
+   ]
+  ],
+  "findings": [
+   "AFIB"
+  ],
+  "triage": "amber"
+ },
+ {
+  "file": "aflutter.csv",
+  "expected": "Atrial flutter",
+  "latency_ms": 338.7,
+  "top3": [
+   [
+    "SVT",
+    0.43,
+    true
+   ],
+   [
+    "AFIB",
+    0.231,
+    false
+   ],
+   [
+    "AFLT",
+    0.223,
+    false
+   ]
+  ],
+  "findings": [
+   "SVT"
+  ],
+  "triage": "amber"
+ },
+ {
+  "file": "avb1.csv",
+  "expected": "First-degree AV block",
+  "latency_ms": 236.1,
+  "top3": [
+   [
+    "NSR",
+    0.92,
+    true
+   ],
+   [
+    "AVB1",
+    0.401,
+    true
+   ],
+   [
+    "SBRAD",
+    0.004,
+    false
+   ]
+  ],
+  "findings": [
+   "NSR",
+   "AVB1"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "avb3.csv",
+  "expected": "Third-degree (complete) AV block",
+  "latency_ms": 248.1,
+  "top3": [
+   [
+    "AVB_HIGH",
+    1.0,
+    true
+   ],
+   [
+    "RBBB",
+    0.64,
+    true
+   ],
+   [
+    "AVB1",
+    0.502,
+    true
+   ]
+  ],
+  "findings": [
+   "AVB_HIGH",
+   "RBBB",
+   "AVB1"
+  ],
+  "triage": "red"
+ },
+ {
+  "file": "lbbb.csv",
+  "expected": "Left bundle branch block",
+  "latency_ms": 189.6,
+  "top3": [
+   [
+    "LBBB",
+    0.946,
+    true
+   ],
+   [
+    "NSR",
+    0.685,
+    true
+   ],
+   [
+    "SBRAD",
+    0.322,
+    false
+   ]
+  ],
+  "findings": [
+   "LBBB",
+   "NSR"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "rbbb.csv",
+  "expected": "Right bundle branch block",
+  "latency_ms": 247.7,
+  "top3": [
+   [
+    "RBBB",
+    0.899,
+    true
+   ],
+   [
+    "NSR",
+    0.869,
+    true
+   ],
+   [
+    "AVB1",
+    0.223,
+    false
+   ]
+  ],
+  "findings": [
+   "RBBB",
+   "NSR"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "pvc.csv",
+  "expected": "Premature ventricular complexes",
+  "latency_ms": 226.9,
+  "top3": [
+   [
+    "PVC",
+    0.984,
+    true
+   ],
+   [
+    "NSR",
+    0.867,
+    true
+   ],
+   [
+    "PAC",
+    0.151,
+    false
+   ]
+  ],
+  "findings": [
+   "PVC",
+   "NSR"
+  ],
+  "triage": "green"
+ },
+ {
+  "file": "../ecg_00001_500hz.csv",
+  "expected": "PTB-XL ecg 1, 500 Hz",
+  "latency_ms": 284.6,
+  "top3": [
+   [
+    "NSR",
+    0.963,
+    true
+   ],
+   [
+    "SBRAD",
+    0.003,
+    false
+   ],
+   [
+    "STACH",
+    0.0,
+    false
+   ]
+  ],
+  "findings": [
+   "NSR"
+  ],
+  "triage": "green"
+ }
+]
