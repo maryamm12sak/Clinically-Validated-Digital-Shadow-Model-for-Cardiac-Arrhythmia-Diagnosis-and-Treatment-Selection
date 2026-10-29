@@ -89,7 +89,7 @@ set "HEALTH="
 for /l %%i in (1,1,60) do (
   if not defined HEALTH (
     for /f "delims=" %%h in ('curl -s http://127.0.0.1:8000/health 2^>nul') do set "HEALTH=%%h"
-    if not defined HEALTH timeout /t 2 /nobreak >nul
+    if not defined HEALTH ping -n 3 127.0.0.1 >nul
   )
 )
 if not defined HEALTH (
