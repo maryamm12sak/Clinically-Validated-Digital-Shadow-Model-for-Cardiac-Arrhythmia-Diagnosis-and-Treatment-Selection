@@ -35,8 +35,14 @@ class LockedSplitError(PermissionError):
 
 
 def load_config(path=None):
+    """Load benchmark.yaml; relative data paths are resolved from the repo root."""
     with open(path or DEFAULT_CONFIG, encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+        config = yaml.safe_load(fh)
+    for key in ("data_root", "cache_dir", "features_path"):
+        p = Path(config["data"][key])
+        if not p.is_absolute():
+            config["data"][key] = str((ML_DIR.parent / p).resolve())
+    return config
 
 
 @dataclass
