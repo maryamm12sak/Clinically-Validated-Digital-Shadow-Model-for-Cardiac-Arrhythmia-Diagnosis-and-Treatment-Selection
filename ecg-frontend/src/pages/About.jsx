@@ -39,8 +39,6 @@ export default function About() {
             </dd>
             <dt>Rules version</dt>
             <dd>{meta?.rules_version ?? "—"}</dd>
-            <dt>Detection threshold</dt>
-            <dd>{meta ? `${Math.round(meta.detection_threshold * 100)}%` : "—"}</dd>
           </dl>
           {metaError && <ErrorBox message={metaError} onRetry={reloadMeta} />}
         </Card>
@@ -61,25 +59,6 @@ export default function About() {
             ))}
         </Card>
       </div>
-
-      <Card title="Model test results">
-        {meta?.metrics ? (
-          <pre className="pre">{JSON.stringify(meta.metrics, null, 2)}</pre>
-        ) : (
-          <p className="muted">Not available yet. They will appear here once the trained model is plugged in.</p>
-        )}
-      </Card>
-
-      <Card title="Limitations">
-        <ul className="notes">
-          <li>The rhythm result is currently a placeholder until the trained model is connected.</li>
-          <li>Next steps are drafts written from AHA/ACLS guidance and have not yet been reviewed by doctors.</li>
-          <li>Only 12-lead CSV/TXT and WFDB (.hea + .dat) files are supported. No XML or photos yet.</li>
-          <li>On 100 Hz recordings, intervals are accurate to about ±10 ms.</li>
-          <li>The ECG signal is not stored, so past analyses can't be re-plotted.</li>
-          <li>There is no login: anyone with access to the app can analyse, view history and give feedback.</li>
-        </ul>
-      </Card>
     </div>
   );
 }

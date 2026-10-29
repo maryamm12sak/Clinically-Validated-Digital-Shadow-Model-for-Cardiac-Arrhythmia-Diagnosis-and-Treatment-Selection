@@ -181,13 +181,11 @@ export default function ResultView({ result, context, ecg, filename, testRhythm,
               <span className="bar-label">{r.name}</span>
               <span className="bar-track" aria-hidden="true">
                 <span className="bar-fill" style={{ width: `${Math.max(0, Math.min(1, r.probability)) * 100}%` }} />
-                <span className="bar-threshold" style={{ left: `${threshold * 100}%` }} />
               </span>
               <span className="bar-value">{pct(r.probability)}</span>
             </li>
           ))}
         </ul>
-        <small className="muted">The vertical line marks the {pct(threshold)} detection threshold.</small>
       </Card>
     </div>
   );
